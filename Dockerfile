@@ -27,25 +27,41 @@ COPY ${KIEKER_MONITORING_PROPERTIES} ${KIEKER_CONFIG_FOLDER}/${KIEKER_MONITORING
 COPY ${KIEKER_AOP} ${KIEKER_CONFIG_FOLDER}/${KIEKER_AOP}
 
 RUN \
+  # Create folders
   mkdir -p ${KIEKER_AGENT_FOLDER} && \
   mkdir -p ${KIEKER_LOGS_FOLDER} && \
   mkdir -p ${KIEKER_JAR_FOLDER} && \
+  #
+  # Clone the recipes-rss repository
   git clone ${KIEKER_RECIPESRSS_GIT} ${KIEKER_RECIPESRSS_FOLDER} && \
   cd ${KIEKER_RECIPESRSS_FOLDER} && \
+  #
+  # Build with gradle
   ./gradlew -x check -x test clean build && \
+  #
+  # Copy jar 
   cp ${KIEKER_RECIPESRSS_FOLDER}/rss-edge/build/libs/rss-edge*SNAPSHOT.jar ${KIEKER_JAR_FOLDER}/${KIEKER_JAVA_JAR} && \
-  TMP_DIR=`mktemp -d` && \
-  mv ${KIEKER_RECIPESRSS_FOLDER}/rss-edge/webapp ${TMP_DIR}/ && \
+  #
+  # Move the webapp folder into /tmp as we need it later
+  mv ${KIEKER_RECIPESRSS_FOLDER}/rss-edge/webapp /tmp/ && \
+  #
+  # Delete the recipes-rss folder as we don't need it anymore (and want to preserve space)
   rm ${KIEKER_RECIPESRSS_FOLDER}/ -r && \
-  mkdir -p ${KIEKER_RECIPESRSS_FOLDER}/rss-edge/webapp && \
-  mv ${TMP_DIR}/webapp ${KIEKER_RECIPESRSS_FOLDER}/rss-edge/ && \
-  rmdir ${TMP_DIR} && \
+  #
+  # Create folder where we want to store the webapp folder
+  mkdir -p ${KIEKER_RECIPESRSS_FOLDER}/rss-edge && \
+  #
+  # Move the webapp folder from temp
+  mv /tmp/webapp ${KIEKER_RECIPESRSS_FOLDER}/rss-edge/ && \
+  #
+  # Delete .gradle directory (to preserve space)
   rm /root/.gradle -r
   
 ENV KIEKER_VERSION 1.12-20150714.003518-96
 ENV KIEKER_AGENT_JAR_SRC kieker-${KIEKER_VERSION}-aspectj.jar
 ENV KIEKER_AGENT_BASE_URL "https://oss.sonatype.org/content/groups/staging/net/kieker-monitoring/kieker/1.12-SNAPSHOT"
  
+# Download the kieker-agent jar.
 RUN \
   wget -q "${KIEKER_AGENT_BASE_URL}/${KIEKER_AGENT_JAR_SRC}" -O "${KIEKER_AGENT_FOLDER}/${KIEKER_AGENT_JAR}"
 

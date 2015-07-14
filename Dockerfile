@@ -34,7 +34,12 @@ RUN \
   cd ${KIEKER_RECIPESRSS_FOLDER} && \
   ./gradlew -x check -x test clean build && \
   cp ${KIEKER_RECIPESRSS_FOLDER}/rss-edge/build/libs/rss-edge*SNAPSHOT.jar ${KIEKER_JAR_FOLDER}/${KIEKER_JAVA_JAR} && \
-  rm ${KIEKER_RECIPESRSS_FOLDER} -r && \
+  TMP_DIR=`mktemp -d` && \
+  mv ${KIEKER_RECIPESRSS_FOLDER}/rss-edge/webapp ${TMP_DIR}/ && \
+  rm ${KIEKER_RECIPESRSS_FOLDER}/ -r && \
+  mkdir -p ${KIEKER_RECIPESRSS_FOLDER}/rss-edge/webapp && \
+  mv ${TMP_DIR}/webapp ${KIEKER_RECIPESRSS_FOLDER}/rss-edge/ && \
+  rmdir ${TMP_DIR} && \
   rm /root/.gradle -r
   
 ENV KIEKER_VERSION 1.12-20150714.003518-96
@@ -43,6 +48,8 @@ ENV KIEKER_AGENT_BASE_URL "https://oss.sonatype.org/content/groups/staging/net/k
  
 RUN \
   wget -q "${KIEKER_AGENT_BASE_URL}/${KIEKER_AGENT_JAR_SRC}" -O "${KIEKER_AGENT_FOLDER}/${KIEKER_AGENT_JAR}"
+
+WORKDIR ${KIEKER_RECIPESRSS_FOLDER}
 
 CMD java \
     -javaagent:${KIEKER_AGENT_FOLDER}/${KIEKER_AGENT_JAR} \

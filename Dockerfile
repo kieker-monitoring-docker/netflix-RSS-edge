@@ -24,7 +24,7 @@ ENV KIEKER_JAVA_JAR rss-edge.jar
 ENV APP_ENV dev
 
 COPY ${KIEKER_MONITORING_PROPERTIES} ${KIEKER_CONFIG_FOLDER}/${KIEKER_MONITORING_PROPERTIES}
-COPY ${KIEKER_AOP} ${KIEKER_CONFIG_FOLDER}/${KIEKER_AOP}
+COPY ${KIEKER_AOP} ${KIEKER_CONFIG_FOLDER}/META-INF/${KIEKER_AOP}
 
 RUN \
   # Create folders
@@ -74,6 +74,7 @@ CMD java \
     -Dkieker.monitoring.writer.filesystem.AsyncFsWriter.customStoragePath=${KIEKER_LOGS_FOLDER} \
     -Daj.weaving.verbose=true \
     -Dkieker.monitoring.skipDefaultAOPConfiguration=true \
-    -jar ${KIEKER_JAR_FOLDER}/${KIEKER_JAVA_JAR}
+    -cp ${KIEKER_CONFIG_FOLDER}:${KIEKER_JAR_FOLDER}/${KIEKER_JAVA_JAR} \
+    com.netflix.recipes.rss.server.EdgeServer
 
 VOLUME ["/opt/kieker"]

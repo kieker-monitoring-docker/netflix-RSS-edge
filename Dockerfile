@@ -69,8 +69,8 @@ RUN \
 WORKDIR ${KIEKER_RECIPESRSS_FOLDER}
 
 CMD \
-     mv ${KIEKER_TMP_CONFIG_FOLDER}/* ${KIEKER_CONFIG_FOLDER}/ && \
-     rm ${KIEKER_TMP_CONFIG_FOLDER} -r && \
+     cp -r ${KIEKER_TMP_CONFIG_FOLDER}/* ${KIEKER_CONFIG_FOLDER}/ && \
+     rm ${KIEKER_TMP_CONFIG_FOLDER}/ -r && \
      java \
       -javaagent:${KIEKER_AGENT_FOLDER}/${KIEKER_AGENT_JAR} \
       -Deureka.serviceUrl.default=http://${TOMCAT_PORT_8080_TCP_ADDR}:8080/eureka/v2/ \

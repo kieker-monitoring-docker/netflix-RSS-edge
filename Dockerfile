@@ -10,6 +10,7 @@ EXPOSE 9090 9092
 ENV KIEKER_FOLDER /opt/kieker
 ENV KIEKER_AGENT_FOLDER ${KIEKER_FOLDER}/agent
 ENV KIEKER_CONFIG_FOLDER ${KIEKER_FOLDER}/config
+ENV KIEKER_TMP_CONFIG_FOLDER ${KIEKER_FOLDER}/tmp-config
 ENV KIEKER_LOGS_FOLDER ${KIEKER_FOLDER}/logs
 ENV KIEKER_JAR_FOLDER ${KIEKER_FOLDER}/jar
 
@@ -23,8 +24,8 @@ ENV KIEKER_AOP aop.xml
 ENV KIEKER_JAVA_JAR rss-edge.jar
 ENV APP_ENV dev
 
-COPY ${KIEKER_MONITORING_PROPERTIES} ${KIEKER_CONFIG_FOLDER}/${KIEKER_MONITORING_PROPERTIES}
-COPY ${KIEKER_AOP} ${KIEKER_CONFIG_FOLDER}/META-INF/${KIEKER_AOP}
+COPY ${KIEKER_MONITORING_PROPERTIES} ${KIEKER_TMP_CONFIG_FOLDER}/${KIEKER_MONITORING_PROPERTIES}
+COPY ${KIEKER_AOP} ${KIEKER_TMP_CONFIG_FOLDER}/META-INF/${KIEKER_AOP}
 
 RUN \
   # Create folders
@@ -67,14 +68,18 @@ RUN \
 
 WORKDIR ${KIEKER_RECIPESRSS_FOLDER}
 
-CMD java \
-    -javaagent:${KIEKER_AGENT_FOLDER}/${KIEKER_AGENT_JAR} \
-    -Deureka.serviceUrl.default=http://${TOMCAT_PORT_8080_TCP_ADDR}:8080/eureka/v2/ \
-    -Dkieker.monitoring.configuration=${KIEKER_CONFIG_FOLDER}/${KIEKER_MONITORING_PROPERTIES} \
-    -Dkieker.monitoring.writer.filesystem.AsyncFsWriter.customStoragePath=${KIEKER_LOGS_FOLDER} \
-    -Daj.weaving.verbose=true \
-    -Dkieker.monitoring.skipDefaultAOPConfiguration=true \
-    -cp ${KIEKER_CONFIG_FOLDER}:${KIEKER_JAR_FOLDER}/${KIEKER_JAVA_JAR} \
-    com.netflix.recipes.rss.server.EdgeServer
+CMD \
+     mv ${KIEKER_TMP_CONFIG_FOLDER}/* ${KIEKER_CONFIG_FOLDER}/ && \
+     rm ${KIEKER_TMP_CONFIG_FOLDER} -r && \
+     java \
+      -javaagent:${KIEKER_AGENT_FOLDER}/${KIEKER_AGENT_JAR} \
+      -Deureka.serviceUrl.default=http://${TOMCAT_PORT_8080_TCP_ADDR}:8080/eureka/v2/ \
+      -Dkieker.monitoring.configuration=${KIEKER_CONFIG_FOLDER}/${KIEKER_MONITORING_PROPERTIES} \
+      -Dkieker.monitoring.writer.filesystem.AsyncFsWriter.customStoragePath=${KIEKER_LOGS_FOLDER} \
+      -Daj.weaving.verbose=true \
+      -Dkieker.monitoring.skipDefaultAOPConfiguration=true \
+      -cp ${KIEKER_CONFIG_FOLDER}:${KIEKER_JAR_FOLDER}/${KIEKER_JAVA_JAR} \
+      com.netflix.recipes.rss.server.EdgeServer
+    
 
 VOLUME ["/opt/kieker"]

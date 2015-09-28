@@ -15,7 +15,7 @@ ENV KIEKER_LOGS_FOLDER ${KIEKER_FOLDER}/logs
 ENV KIEKER_JAR_FOLDER ${KIEKER_FOLDER}/jar
 
 ENV KIEKER_RECIPESRSS_FOLDER ${KIEKER_FOLDER}/recipes-rss
-ENV KIEKER_RECIPESRSS_GIT "https://github.com/teeratpitakrat/recipes-rss"
+ENV KIEKER_RECIPESRSS_GIT "https://github.com/hora-prediction/recipes-rss"
 
 # Set other variables
 ENV KIEKER_MONITORING_PROPERTIES kieker.monitoring.properties

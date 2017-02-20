@@ -58,7 +58,7 @@ RUN \
   # Delete .gradle directory (to preserve space)
   rm /root/.gradle -r
   
-ENV KIEKER_VERSION 1.13-20170219.033122-280
+ENV KIEKER_VERSION 1.13-20170220.033038-281
 ENV KIEKER_AGENT_JAR_SRC kieker-${KIEKER_VERSION}-aspectj.jar
 ENV KIEKER_AGENT_BASE_URL "https://oss.sonatype.org/content/groups/staging/net/kieker-monitoring/kieker/1.13-SNAPSHOT"
  

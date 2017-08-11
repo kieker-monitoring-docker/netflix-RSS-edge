@@ -72,7 +72,7 @@ CMD \
       -javaagent:${KIEKER_AGENT_FOLDER}/${KIEKER_AGENT_JAR} \
       -Deureka.serviceUrl.default=http://${TOMCAT_PORT_8080_TCP_ADDR}:8080/eureka/v2/ \
       -Dkieker.monitoring.configuration=${KIEKER_CONFIG_FOLDER}/${KIEKER_MONITORING_PROPERTIES} \
-      -Dkieker.monitoring.writer.filesystem.AsyncFsWriter.customStoragePath=${KIEKER_LOGS_FOLDER} \
+      -Dkieker.monitoring.writer.filesystem.AsciiFileWriter.customStoragePath=${KIEKER_LOGS_FOLDER} \
       -Daj.weaving.verbose=true \
       -Dkieker.monitoring.skipDefaultAOPConfiguration=true \
       -cp ${KIEKER_CONFIG_FOLDER}:${KIEKER_JAR_FOLDER}/${KIEKER_JAVA_JAR} \
